@@ -1,6 +1,6 @@
 FROM        debian
 
-MAINTAINER  Shaker Qawasmi "http://github.com/sqawasmi"
+MAINTAINER  Adam Xiao "http://github.com/adamxiao"
 
 # Update the package repository
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \ 
@@ -16,7 +16,7 @@ RUN export LANGUAGE=en_US.UTF-8 && \
 
 # Install TrafficServer
 RUN mkdir -p /downloads/trafficserver
-RUN wget http://download.nextag.com/apache/trafficserver/trafficserver-5.3.1.tar.bz2 -O /downloads/trafficserver.tar.bz2
+RUN wget http://mirrors.tuna.tsinghua.edu.cn/apache/trafficserver/trafficserver-6.2.3.tar.bz2 -O /downloads/trafficserver.tar.bz2
 RUN cd /downloads && tar xvf trafficserver.tar.bz2 -C /downloads/trafficserver --strip-components 1
 RUN cd /downloads/trafficserver && ./configure --prefix=/opt/trafficserver
 RUN cd /downloads/trafficserver && make
