@@ -1,2 +1,2 @@
 all:
-	docker build -t trafficserver-docker:9 .
+	docker build -t trafficserver-docker:8 .
