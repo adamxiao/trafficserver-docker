@@ -26,8 +26,8 @@ CONFIG proxy.config.http.server_ports STRING 8080 8080:ipv6
 # Via: headers. Docs:
 #     https://docs.trafficserver.apache.org/records.config#proxy-config-http-insert-response-via-str
 ##############################################################################
-CONFIG proxy.config.http.insert_request_via_str INT 0
-CONFIG proxy.config.http.insert_response_via_str INT 1
+CONFIG proxy.config.http.insert_request_via_str INT 1
+CONFIG proxy.config.http.insert_response_via_str INT 0
 
 ##############################################################################
 # Parent proxy configuration, in addition to these settings also see parent.config. Docs:
@@ -76,7 +76,7 @@ CONFIG proxy.config.http.negative_caching_lifetime INT 1800
 #    https://docs.trafficserver.apache.org/records.config#proxy-user-variables
 ##############################################################################
 CONFIG proxy.config.http.insert_client_ip INT 1
-CONFIG proxy.config.http.insert_squid_x_forwarded_for INT 0
+CONFIG proxy.config.http.insert_squid_x_forwarded_for INT 1
 
 ##############################################################################
 # Security. Docs:
@@ -152,7 +152,7 @@ CONFIG proxy.config.log.periodic_tasks_interval INT 5
 #    https://docs.trafficserver.apache.org/records.config#url-remap-rules
 #    https://docs.trafficserver.apache.org/en/latest/admin-guide/files/remap.config.en.html
 ##############################################################################
-CONFIG proxy.config.url_remap.remap_required INT 0
+CONFIG proxy.config.url_remap.remap_required INT 1
     # https://docs.trafficserver.apache.org/records.config#proxy-config-url-remap-pristine-host-hdr
 CONFIG proxy.config.url_remap.pristine_host_hdr INT 0
     # https://docs.trafficserver.apache.org/records.config#reverse-proxy
@@ -176,5 +176,3 @@ CONFIG proxy.config.diags.debug.tags STRING http|dns
 # ToDo: Undocumented
 CONFIG proxy.config.dump_mem_info_frequency INT 0
 CONFIG proxy.config.http.slow.log.threshold INT 0
-# cache inspect
-CONFIG proxy.config.http_ui_enabled INT 1

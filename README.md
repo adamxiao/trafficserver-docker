@@ -4,7 +4,7 @@ Docker build for Apache TrafficServer (ATS)
 This repository provides Dockerfile for [Apache TrafficServer][0] 
 
 ### Status
-- Debian: wheezy
+- ubuntu: 18.04
 - TrafficServer: 9.0.0
 
 Built images are uploaded to [index.docker.io][1]
@@ -25,7 +25,7 @@ This build comes with the standard configuration as provided by TrafficServer, c
 
 You can use docker volumes mount feature to run TrafficServer with your specific configuration, for example:
 
-`docker run -d --name TrafficServer -p 8080:8080 /MY-CONFIGS/trafficserver/:/etc/trafficserver/ shaker/trafficserver`
+`docker run -d --name TrafficServer -p 8080:8080 -v /MY-CONFIGS/trafficserver/:/etc/trafficserver/ adamxiao/trafficserver`
 
 You need to change `/MY-CONFIGS/trafficserver/` to your configuration path.
 

@@ -55,16 +55,3 @@
 #
 #  Revalidate all http objects from www.example.com after 2 hours
 #    dest_domain=www.example.com   scheme=http  revalidate=2h
-url_regex=.* suffix=xml  ttl-in-cache=5d
-url_regex=.* suffix=ts  ttl-in-cache=5d
-url_regex=.* suffix=jpeg  ttl-in-cache=5d
-url_regex=.* suffix=mp4  ttl-in-cache=5d
-url_regex=.* suffix=zip  ttl-in-cache=5d
-url_regex=.* suffix=gif  ttl-in-cache=5d
-url_regex=.* suffix=ppt  ttl-in-cache=5d
-url_regex=.* suffix=jpg  ttl-in-cache=5d
-url_regex=.* suffix=swf  ttl-in-cache=5d
-url_regex=.* scheme=http  ttl-in-cache=1h
-url_regex=.* scheme=m3u8  ttl-in-cache=5d
-url_regex=.* scheme=js  ttl-in-cache=5d
-url_regex=.* scheme=css  ttl-in-cache=5d
