@@ -1,2 +1,2 @@
 all:
-	docker build -t trafficserver-docker:8 .
+	docker build -t iefcufj/trafficserver:8 .

@@ -44,7 +44,7 @@ formats:
 logs:
     - filename: squid
       format: squid
-      mode: binary
+      mode: ascii
 
 
 # vim: set ft=yaml :
