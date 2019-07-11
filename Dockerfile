@@ -1,48 +1,41 @@
-FROM ubuntu:18.04
+FROM centos:7.4.1708
 
 MAINTAINER  Adam Xiao "http://github.com/adamxiao"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-# This runs all the yum installation, starting with a system level update
-RUN apt-get update -y && \
-    apt-get install -y \
-    zlib1g-dev \
-    wget \
-    && \
-    apt-get install -y \
+RUN yum makecache \
+    && yum install -y \
     autoconf \
     automake \
     libtool \
-    pkg-config \
-    libmodule-install-perl \
-    g++ \
-    tcl-dev \
-    libssl-dev \
-    libpcre3-dev \
-    libcap-dev \
-    libhwloc-dev  \
-    libncurses5-dev \
-    libcurl4-openssl-dev \
-    flex
+    pkgconfig \
+    perl-ExtUtils-MakeMaker \
+    gcc-c++ \
+    openssl-devel \
+    tcl-devel \
+    pcre-devel \
+    ncurses-devel libcurl-devl \
+    libcap-devel \
+    hwloc-devel \
+    flex \
+    wget bzip2 make patch
 
 # Install openssl 1.1.1c
-
 RUN mkdir -p /downloads/openssl && \
     wget https://www.openssl.org/source/openssl-1.1.1c.tar.gz -O /downloads/openssl-1.1.1c.tar.gz && \
     cd /downloads && tar xzf openssl-1.1.1c.tar.gz -C /downloads/openssl --strip-components 1 && \
     cd /downloads/openssl && ./config --prefix=/opt/openssl --openssldir=/usr/local/ssl && \
     make && make install
 
-ADD ./files/adam_slice.patch /download/adam_slice.patch
-ADD ./files/adam_certifier.patch /download/adam_certifier.patch
+ADD ./files/adam_certifier_slice.patch /download/adam_certifier_slice.patch
 
 # Install TrafficServer
 RUN mkdir -p /downloads/trafficserver && \
-    wget https://mirrors.tuna.tsinghua.edu.cn/apache/trafficserver/trafficserver-8.0.3.tar.bz2 -O /downloads/trafficserver.tar.bz2 && \
-    cd /downloads && tar xvf trafficserver.tar.bz2 -C /downloads/trafficserver --strip-components 1 && \
-    cd /downloads/trafficserver && patch -p1 < /download/adam_slice.patch && patch -p1 < /download/adam_certifier.patch && \
-	autoreconf -if && ./configure --prefix=/opt/trafficserver --enable-experimental-plugins --with-openssl=/opt/openssl && \
+    wget http://mirrors.tuna.tsinghua.edu.cn/apache/trafficserver/trafficserver-7.1.6.tar.bz2 -O /downloads/trafficserver-7.1.6.tar.bz2 && \
+    cd /downloads && tar xvf trafficserver-7.1.6.tar.bz2 -C /downloads/trafficserver --strip-components 1 && \
+    cd /downloads/trafficserver && patch -p1 < /download/adam_certifier_slice.patch && \
+    autoreconf -if && ./configure --prefix=/opt/trafficserver --enable-experimental-plugins --with-openssl=/opt/openssl && \
     make && make install
 
 ADD ./files/etc/trafficserver /etc/trafficserver
@@ -53,4 +46,4 @@ RUN rm -rf /opt/trafficserver/etc/trafficserver && ln -sf /etc/trafficserver /op
 
 EXPOSE 8080 8443
 
-CMD ["/opt/trafficserver/bin/traffic_server"]
+CMD ["/opt/trafficserver/bin/traffic_cop"]
