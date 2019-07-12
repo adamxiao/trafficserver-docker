@@ -5,7 +5,7 @@ function do_global_pre_remap()
     end
 
     local url_host = ts.client_request.get_url_host()
-    if url_host == 'www.baidu.com' then
+    if url_host ~= 'jdvodrvfb210d.vod.126.net' then
         return
     end
 

@@ -40,7 +40,8 @@ RUN mkdir -p /downloads/trafficserver && \
 
 ADD ./files/etc/trafficserver /etc/trafficserver
 #RUN mv /opt/trafficserver/etc/trafficserver /etc/trafficserver
-RUN rm -rf /opt/trafficserver/etc/trafficserver && ln -sf /etc/trafficserver /opt/trafficserver/etc/trafficserver && \
+RUN mv /opt/trafficserver/etc/trafficserver{,.org} && ln -sf /etc/trafficserver /opt/trafficserver/etc/trafficserver && \
+    chown nobody:nobody -R /etc/trafficserver && \
     chmod 777 /opt/trafficserver/etc/trafficserver/certifier /opt/trafficserver/etc/trafficserver/certifier/certs && \
     chmod 666 /opt/trafficserver/etc/trafficserver/certifier/ca-serial.txt
 
