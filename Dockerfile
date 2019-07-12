@@ -8,6 +8,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -y && \
     apt-get install -y \
     zlib1g-dev \
+    libluajit-5.1-dev \
     wget \
     && \
     apt-get install -y \
@@ -42,14 +43,14 @@ RUN mkdir -p /downloads/trafficserver && \
     wget https://mirrors.tuna.tsinghua.edu.cn/apache/trafficserver/trafficserver-8.0.3.tar.bz2 -O /downloads/trafficserver.tar.bz2 && \
     cd /downloads && tar xvf trafficserver.tar.bz2 -C /downloads/trafficserver --strip-components 1 && \
     cd /downloads/trafficserver && patch -p1 < /download/adam_slice.patch && patch -p1 < /download/adam_certifier.patch && \
-	autoreconf -if && ./configure --prefix=/opt/trafficserver --enable-experimental-plugins --with-openssl=/opt/openssl && \
+    autoreconf -if && ./configure --prefix=/opt/trafficserver --enable-experimental-plugins --with-luajit=/usr --with-openssl=/opt/openssl && \
     make && make install
 
 ADD ./files/etc/trafficserver /etc/trafficserver
 #RUN mv /opt/trafficserver/etc/trafficserver /etc/trafficserver
 RUN rm -rf /opt/trafficserver/etc/trafficserver && ln -sf /etc/trafficserver /opt/trafficserver/etc/trafficserver && \
-	chmod 777 /opt/trafficserver/etc/trafficserver/certifier /opt/trafficserver/etc/trafficserver/certifier/certs && \
-	chmod 666 /opt/trafficserver/etc/trafficserver/certifier/ca-serial.txt
+    chmod 777 /opt/trafficserver/etc/trafficserver/certifier /opt/trafficserver/etc/trafficserver/certifier/certs && \
+    chmod 666 /opt/trafficserver/etc/trafficserver/certifier/ca-serial.txt
 
 EXPOSE 8080 8443
 
