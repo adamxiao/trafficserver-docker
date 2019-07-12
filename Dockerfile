@@ -35,14 +35,14 @@ RUN mkdir -p /downloads/trafficserver && \
     wget http://mirrors.tuna.tsinghua.edu.cn/apache/trafficserver/trafficserver-7.1.6.tar.bz2 -O /downloads/trafficserver-7.1.6.tar.bz2 && \
     cd /downloads && tar xvf trafficserver-7.1.6.tar.bz2 -C /downloads/trafficserver --strip-components 1 && \
     cd /downloads/trafficserver && patch -p1 < /download/adam_certifier_slice.patch && \
-    autoreconf -if && ./configure --prefix=/opt/trafficserver --enable-experimental-plugins --with-openssl=/opt/openssl && \
+    autoreconf -if && ./configure --prefix=/opt/trafficserver --enable-experimental-plugins --with-luajit=/usr --with-openssl=/opt/openssl && \
     make && make install
 
 ADD ./files/etc/trafficserver /etc/trafficserver
 #RUN mv /opt/trafficserver/etc/trafficserver /etc/trafficserver
 RUN rm -rf /opt/trafficserver/etc/trafficserver && ln -sf /etc/trafficserver /opt/trafficserver/etc/trafficserver && \
-	chmod 777 /opt/trafficserver/etc/trafficserver/certifier /opt/trafficserver/etc/trafficserver/certifier/certs && \
-	chmod 666 /opt/trafficserver/etc/trafficserver/certifier/ca-serial.txt
+    chmod 777 /opt/trafficserver/etc/trafficserver/certifier /opt/trafficserver/etc/trafficserver/certifier/certs && \
+    chmod 666 /opt/trafficserver/etc/trafficserver/certifier/ca-serial.txt
 
 EXPOSE 8080 8443
 
