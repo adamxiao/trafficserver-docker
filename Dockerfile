@@ -36,14 +36,17 @@ RUN mkdir -p /downloads/trafficserver && \
     cd /downloads && tar xvf trafficserver-7.1.6.tar.bz2 -C /downloads/trafficserver --strip-components 1 && \
     cd /downloads/trafficserver && patch -p1 < /download/adam_certifier_slice.patch && \
     autoreconf -if && ./configure --prefix=/opt/trafficserver --enable-experimental-plugins --with-luajit=/usr --with-openssl=/opt/openssl && \
-    make && make install
+    make && make install && \
+    rm -rf /downloads
 
-ADD ./files/etc/trafficserver /etc/trafficserver
-#RUN mv /opt/trafficserver/etc/trafficserver /etc/trafficserver
-RUN mv /opt/trafficserver/etc/trafficserver{,.org} && ln -sf /etc/trafficserver /opt/trafficserver/etc/trafficserver && \
-    chown nobody:nobody -R /etc/trafficserver && \
-    chmod 777 /opt/trafficserver/etc/trafficserver/certifier /opt/trafficserver/etc/trafficserver/certifier/certs && \
-    chmod 666 /opt/trafficserver/etc/trafficserver/certifier/ca-serial.txt
+ADD ./files/etc/trafficserver /etc/trafficserver.new
+RUN mv /opt/trafficserver/etc/trafficserver /etc/trafficserver && \
+    ln -sf /etc/trafficserver /opt/trafficserver/etc/trafficserver && \
+    cp -r /etc/trafficserver /etc/trafficserver.org && \
+    cp -r /etc/trafficserver.new/* /etc/trafficserver/ && \
+    chown nobody -R /etc/trafficserver && \
+    chmod 777 /etc/trafficserver/certifier /etc/trafficserver/certifier/certs && \
+    chmod 666 /etc/trafficserver/certifier/ca-serial.txt
 
 EXPOSE 8080 8443
 
