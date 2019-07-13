@@ -1,0 +1,41 @@
+diff --git a/plugins/experimental/certifier/certifier.cc b/plugins/experimental/certifier/certifier.cc
+index 9415d75..905a8a8 100644
+--- a/plugins/experimental/certifier/certifier.cc
++++ b/plugins/experimental/certifier/certifier.cc
+@@ -402,6 +402,36 @@ mkcrt(X509_REQ *req, int serial)
+     return nullptr;
+   }
+ 
++  // add subject cn extensions - added by adam 2019-07-10
++  //refer squid 4.7 addAltNameWithSubjectCn
++  do {
++    X509_NAME *name = X509_REQ_get_subject_name(req);
++    if (!name)
++      break;
++
++    const int loc = X509_NAME_get_index_by_NID(name, NID_commonName, -1);
++    if (loc < 0)
++      break;
++
++    ASN1_STRING *cn_data = X509_NAME_ENTRY_get_data(X509_NAME_get_entry(name, loc));
++    if (!cn_data)
++      break;
++
++    char dnsName[1024]; // DNS names are limited to 256 characters
++    const int res = snprintf(dnsName, sizeof(dnsName), "DNS:%*s", cn_data->length, cn_data->data);
++    if (res <= 0 || res >= static_cast<int>(sizeof(dnsName)))
++      break;
++    //TSDebug(PLUGIN_NAME, "adam_debug dnsName %s", dnsName);
++
++    X509_EXTENSION *ext = X509V3_EXT_conf_nid(NULL, NULL, NID_subject_alt_name, dnsName);
++    if (!ext)
++      break;
++
++    (void)X509_add_ext(cert.get(), ext, -1);
++    X509_EXTENSION_free(ext);
++
++  } while (0);
++
+   X509_sign(cert.get(), ca_pkey_scoped.get(), EVP_sha256());
+ 
+   return cert;

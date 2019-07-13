@@ -8,9 +8,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -y && \
     apt-get install -y \
     zlib1g-dev \
+    libluajit-5.1-dev \
     wget \
-    git \
-    vim \
     && \
     apt-get install -y \
     autoconf \
@@ -28,18 +27,32 @@ RUN apt-get update -y && \
     libcurl4-openssl-dev \
     flex
 
+# Install openssl 1.1.1c
+RUN mkdir -p /downloads/openssl && \
+    wget https://www.openssl.org/source/openssl-1.1.1c.tar.gz -O /downloads/openssl-1.1.1c.tar.gz && \
+    cd /downloads && tar xzf openssl-1.1.1c.tar.gz -C /downloads/openssl --strip-components 1 && \
+    cd /downloads/openssl && ./config --prefix=/opt/openssl --openssldir=/usr/local/ssl && \
+    make && make install
+
+ADD ./files/adam_certifier.patch /download/adam_certifier.patch
+
 # Install TrafficServer
-RUN mkdir -p /downloads/ && \
-    git clone https://github.com/apache/trafficserver /downloads/trafficserver && \
-    cd /downloads/trafficserver && \
-    autoreconf -if && ./configure --prefix=/opt/trafficserver --enable-experimental-plugins && \
+RUN mkdir -p /downloads/trafficserver && \
+    wget http://172.17.0.1/trafficserver-master.tgz -O /downloads/trafficserver-master.tgz && \
+    tar xvf /downloads/trafficserver-master.tgz -C /downloads/trafficserver --strip-components 1 && \
+    cd /downloads/trafficserver && patch -p1 < /download/adam_certifier.patch && \
+    autoreconf -if && ./configure --prefix=/opt/trafficserver --enable-experimental-plugins --with-luajit=/usr --with-openssl=/opt/openssl && \
     make && make install && \
     rm -rf /downloads
 
-ADD ./files/etc/trafficserver /etc/trafficserver
-RUN mv /opt/trafficserver/etc/trafficserver /etc/trafficserver
-RUN ln -sf /etc/trafficserver /opt/trafficserver/etc/trafficserver
+ADD ./files/etc/trafficserver /etc/trafficserver.new
+RUN mv /opt/trafficserver/etc/trafficserver /etc/trafficserver && \
+    ln -sf /etc/trafficserver /opt/trafficserver/etc/trafficserver && \
+    cp -r /etc/trafficserver.new/* /etc/trafficserver/ && \
+    chown nobody -R /etc/trafficserver && \
+    chmod 777 /etc/trafficserver/certifier /etc/trafficserver/certifier/certs && \
+    chmod 666 /etc/trafficserver/certifier/ca-serial.txt
 
-EXPOSE 8080
+EXPOSE 8080 8443
 
 CMD ["/opt/trafficserver/bin/traffic_server"]
