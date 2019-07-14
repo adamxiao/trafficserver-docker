@@ -28,7 +28,6 @@ RUN apt-get update -y && \
     flex
 
 # Install openssl 1.1.1c
-
 RUN mkdir -p /downloads/openssl && \
     wget https://www.openssl.org/source/openssl-1.1.1c.tar.gz -O /downloads/openssl-1.1.1c.tar.gz && \
     cd /downloads && tar xzf openssl-1.1.1c.tar.gz -C /downloads/openssl --strip-components 1 && \
@@ -44,14 +43,18 @@ RUN mkdir -p /downloads/trafficserver && \
     cd /downloads && tar xvf trafficserver.tar.bz2 -C /downloads/trafficserver --strip-components 1 && \
     cd /downloads/trafficserver && patch -p1 < /download/adam_slice.patch && patch -p1 < /download/adam_certifier.patch && \
     autoreconf -if && ./configure --prefix=/opt/trafficserver --enable-experimental-plugins --with-luajit=/usr --with-openssl=/opt/openssl && \
-    make && make install
+    make && make install && \
+    rm -rf /downloads
 
-ADD ./files/etc/trafficserver /etc/trafficserver
-#RUN mv /opt/trafficserver/etc/trafficserver /etc/trafficserver
-RUN rm -rf /opt/trafficserver/etc/trafficserver && ln -sf /etc/trafficserver /opt/trafficserver/etc/trafficserver && \
-    chmod 777 /opt/trafficserver/etc/trafficserver/certifier /opt/trafficserver/etc/trafficserver/certifier/certs && \
-    chmod 666 /opt/trafficserver/etc/trafficserver/certifier/ca-serial.txt
+ADD ./files/etc/trafficserver /etc/trafficserver.new
+RUN mv /opt/trafficserver/etc/trafficserver /etc/trafficserver && \
+    ln -sf /etc/trafficserver /opt/trafficserver/etc/trafficserver && \
+    cp -r /etc/trafficserver /etc/trafficserver.org && \
+    cp -r /etc/trafficserver.new/* /etc/trafficserver/ && \
+    chown nobody -R /etc/trafficserver && \
+    chmod 777 /etc/trafficserver/certifier /etc/trafficserver/certifier/certs && \
+    chmod 666 /etc/trafficserver/certifier/ca-serial.txt
 
 EXPOSE 8080 8443
 
-CMD ["/opt/trafficserver/bin/traffic_server"]
+CMD ["/opt/trafficserver/bin/traffic_manager"]
