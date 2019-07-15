@@ -1,2 +1,2 @@
 all:
-	docker build -t iefcufj/trafficserver:7 .
+	docker build -t iefcufj/trafficserver:6 .

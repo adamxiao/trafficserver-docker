@@ -30,11 +30,14 @@ RUN mkdir -p /downloads/openssl && \
 
 ADD ./files/adam_certifier_slice.patch /download/adam_certifier_slice.patch
 
+# TODO: opt
+RUN yum install -y libxml2-devel
+
 # Install TrafficServer
 RUN mkdir -p /downloads/trafficserver && \
-    wget http://mirrors.tuna.tsinghua.edu.cn/apache/trafficserver/trafficserver-7.1.6.tar.bz2 -O /downloads/trafficserver-7.1.6.tar.bz2 && \
-    cd /downloads && tar xvf trafficserver-7.1.6.tar.bz2 -C /downloads/trafficserver --strip-components 1 && \
-    cd /downloads/trafficserver && patch -p1 < /download/adam_certifier_slice.patch && \
+    wget http://mirrors.tuna.tsinghua.edu.cn/apache/trafficserver/trafficserver-6.2.3.tar.bz2 -O /downloads/trafficserver-6.2.3.tar.bz2 && \
+    cd /downloads && tar xvf trafficserver-6.2.3.tar.bz2 -C /downloads/trafficserver --strip-components 1 && \
+    cd /downloads/trafficserver && \
     autoreconf -if && ./configure --prefix=/opt/trafficserver --enable-experimental-plugins --with-luajit=/usr --with-openssl=/opt/openssl && \
     make && make install && \
     rm -rf /downloads
@@ -43,10 +46,7 @@ ADD ./files/etc/trafficserver /etc/trafficserver.new
 RUN mv /opt/trafficserver/etc/trafficserver /etc/trafficserver && \
     ln -sf /etc/trafficserver /opt/trafficserver/etc/trafficserver && \
     cp -r /etc/trafficserver /etc/trafficserver.org && \
-    cp -r /etc/trafficserver.new/* /etc/trafficserver/ && \
-    chown nobody -R /etc/trafficserver && \
-    chmod 777 /etc/trafficserver/certifier /etc/trafficserver/certifier/certs && \
-    chmod 666 /etc/trafficserver/certifier/ca-serial.txt
+    chown nobody -R /etc/trafficserver
 
 EXPOSE 8080 8443
 
