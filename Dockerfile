@@ -28,13 +28,14 @@ RUN mkdir -p /downloads/openssl && \
     cd /downloads/openssl && ./config --prefix=/opt/openssl --openssldir=/usr/local/ssl && \
     make && make install
 
-ADD ./files/adam_certifier_slice.patch /download/adam_certifier_slice.patch
+#ADD ./files/adam_certifier_slice.patch /download/adam_certifier_slice.patch
+ADD ./files/*.patch /downloads/
 
 # Install TrafficServer
 RUN mkdir -p /downloads/trafficserver && \
     wget http://mirrors.tuna.tsinghua.edu.cn/apache/trafficserver/trafficserver-7.1.6.tar.bz2 -O /downloads/trafficserver-7.1.6.tar.bz2 && \
     cd /downloads && tar xvf trafficserver-7.1.6.tar.bz2 -C /downloads/trafficserver --strip-components 1 && \
-    cd /downloads/trafficserver && patch -p1 < /download/adam_certifier_slice.patch && \
+    cd /downloads/trafficserver && patch -p1 < /downloads/adam_certifier_slice.patch && patch -p1 < /downloads/adam_collapsed_fix.patch && \
     autoreconf -if && ./configure --prefix=/opt/trafficserver --enable-experimental-plugins --with-luajit=/usr --with-openssl=/opt/openssl && \
     make && make install && \
     rm -rf /downloads
